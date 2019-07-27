@@ -63,7 +63,7 @@ const login = async (req, res) => {
 
                 const payload = { id: user.id, name: user.name, email: user.email };
             
-                jwt.sign(payload, config.secretOrKey, { expiresIn: 3600 }, (err, token) => {
+                jwt.sign(payload, config.secretOrKey, { expiresIn: 43200 }, (err, token) => {
                     res.json({
                         status: 'success',
                         message: 'Successfully login.',

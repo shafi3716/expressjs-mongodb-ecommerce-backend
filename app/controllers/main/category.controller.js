@@ -38,6 +38,7 @@ const storeCategory = async (req, res) => {
     .save()
     .then( data => {
         res.status(201).json({
+            status: 'success',
             message: 'Successfully Saved.',
             data: data,
         })
@@ -48,6 +49,11 @@ const storeCategory = async (req, res) => {
             error
         })
     })
+}
+
+const deleteCatgeory = async (req,res) => {
+
+    res.status(200).json(req.params.id)
 }
 
 // subcategory
@@ -117,6 +123,7 @@ const storeSubCategory = async (req, res) => {
 module.exports = {
     indexCategory,
     storeCategory,
+    deleteCatgeory,
     indexSubCategory,
     storeSubCategory
 }
