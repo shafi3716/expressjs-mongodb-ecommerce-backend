@@ -6,6 +6,9 @@ router.use('/api', require('./auth/auth'));
 // category
 router.use('/api', require('./main/category'));
 
+//subCategory
+router.use('/api/subcategory', require('./main/subCategory'));
+
 // product
 router.use('/api', require('./main/product'));
 

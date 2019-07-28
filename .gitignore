@@ -3,6 +3,9 @@
 # dependencies
 /node_modules
 
+# uploads file
+/uploads
+
 # database setup
 /config/keys.js
 

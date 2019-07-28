@@ -1,12 +1,11 @@
 const Category = require('../../models/main/Category')
-const SubCategory = require('../../models/main/SubCategory')
 
-const indexCategory = async (req, res) => {
+const index = async (req, res) => {
 
     if(req.query.id){
         await Category.findById({ _id: req.query.id })
-        .select('title description position subCategoryId')
-        .populate('subCategoryId')
+        .select('title description position createdAt')
+        .sort({createdAt: -1})
         .then( data => {
             if(data){
                 res.status(200).json(data);
@@ -15,8 +14,8 @@ const indexCategory = async (req, res) => {
     }
     else{
         await Category.find()
-        .select('title description position subCategoryId')
-        .populate('subCategoryId')
+        .select('title description position createdAt')
+        .sort({createdAt: -1})
         .then( data => {
             if(data){
                 res.status(200).json(data);
@@ -26,7 +25,7 @@ const indexCategory = async (req, res) => {
 }
 
 
-const storeCategory = async (req, res) => {
+const store = async (req, res) => {
 
     const {title,description,position} = req.body
 
@@ -51,79 +50,22 @@ const storeCategory = async (req, res) => {
     })
 }
 
-const deleteCatgeory = async (req,res) => {
+const destroy = async (req,res) => {
 
-    res.status(200).json(req.params.id)
-}
-
-// subcategory
-
-const indexSubCategory = async (req, res) => {
-
-    if(req.query.id){
-        await SubCategory.findById({ _id: req.query.id })
-        .select('title description position')
-        .then( data => {
-            if(data){
-                res.status(200).json(data);
-            }
+    await Category.findOneAndDelete({_id: req.params.id}, (err, data) => {
+       if(data){
+        res.status(200).json({
+            status: 'success',
+            message: 'Successfully Deleted.',
+            data: data._id
         })
-        .catch(error => {
-            res.json({
-                message: 'ERROR Occured.',
-                error
-                })
-            })
-    }
-    else{
-        await SubCategory.find()
-        .select('title description position')
-        .then( data => {
-            if(data){
-                res.status(200).json(data);
-            }
-        })
-        .catch(error => {
-            res.json({
-                message: 'ERROR Occured.',
-                error
-                })
-            })
-    }
-  
+       }
+    })
 }
 
-const storeSubCategory = async (req, res) => {
-
-    const { title , description, position, categoryId } = req.body
-
-    await new SubCategory({
-     title: title,
-     description: description,
-     position: position,
-     categoryId: categoryId
-    })
-    .save()
-    .then( data => {
-         if(data){
-            res.status(200).json({
-                message: 'Successfully Saved.',
-                data: data,
-            })
-         }    
-    })
-    .catch(error => {
-     res.json({
-         message: 'ERROR Occured.',
-         error
-         })
-     })
-}
 
 module.exports = {
-    indexCategory,
-    storeCategory,
-    deleteCatgeory,
-    indexSubCategory,
-    storeSubCategory
+    index,
+    store,
+    destroy
 }

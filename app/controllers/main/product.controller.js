@@ -24,17 +24,22 @@ const index = async (req, res) => {
 
 const store = async (req , res) => {
     
-    const { title, description, categoryId } = req.body;
+    return res.json(req.body);
+
+    const { title, description, categoryId , subCategoryId, position } = req.body;
     
     await new Product({
-        title: title,
-        description: description,
+        title,
+        description,
         image: req.file.path,
-        categoryId: categoryId
+        categoryId,
+        subCategoryId,
+        position,
     })
     .save()
     .then( data => {
         res.status(201).json({
+            status: 'success',
             message: 'Successfully Saved.',
             data: data,
         })

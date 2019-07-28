@@ -17,8 +17,14 @@ const productSchema = new Schema({
     },
     categoryId:{
         type: Schema.Types.ObjectId,
+        required: true,
         ref: 'categories'
-        }
+    },
+    subCategoryId:{
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: 'subCategories'
+    }
 },
     { timestamps: true }
 );

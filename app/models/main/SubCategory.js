@@ -15,10 +15,11 @@ const subCategorySchema = new Schema({
         type: Number,
         default: 0
     },
-    categoryId:[{
+    categoryId:{
         type: Schema.Types.ObjectId,
+        required: true,
         ref: 'categories'
-    }]
+    }
 },
     { timestamps: true }
 
