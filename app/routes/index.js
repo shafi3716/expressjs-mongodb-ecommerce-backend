@@ -10,6 +10,6 @@ router.use('/api', require('./main/category'));
 router.use('/api/subcategory', require('./main/subCategory'));
 
 // product
-router.use('/api', require('./main/product'));
+router.use('/api/product', require('./main/product'));
 
 module.exports = router;
