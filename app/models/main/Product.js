@@ -22,8 +22,10 @@ const productSchema = new Schema({
     },
     subCategoryId:{
         type: Schema.Types.ObjectId,
-        required: true,
         ref: 'subCategories'
+    },
+    position: {
+        type: Number,
     }
 },
     { timestamps: true }

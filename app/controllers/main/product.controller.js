@@ -1,4 +1,5 @@
 const Product = require('../../models/main/Product')
+const RootPath = require('../../../root-path')
 const fs = require('fs')
 
 const index = async (req, res) => {
@@ -58,13 +59,11 @@ const destroy = async (req, res) => {
 
     Product.findOneAndDelete({_id: req.params.id}, (err, data) => {
         if(data){
-            const path = `./${data.image}`;
+            const path = RootPath.projectRootPath + '/' + data.image;
             fs.unlink(path, (err) => {
                 if (err) {
-                  console.log(err)
-                  return
+                  return console.log(err)
                 }
-              
                 //file removed
               })
 

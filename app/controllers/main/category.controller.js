@@ -1,4 +1,6 @@
 const Category = require('../../models/main/Category')
+const SubCategory = require('../../models/main/SubCategory')
+const Product = require('../../models/main/Product')
 
 const index = async (req, res) => {
 
@@ -52,13 +54,15 @@ const store = async (req, res) => {
 
 const destroy = async (req,res) => {
 
+    await SubCategory.deleteMany({categoryId: req.params.id})
+
     await Category.findOneAndDelete({_id: req.params.id}, (err, data) => {
        if(data){
-        res.status(200).json({
-            status: 'success',
-            message: 'Successfully Deleted.',
-            data: data._id
-        })
+            res.status(200).json({
+                status: 'success',
+                message: 'Successfully Deleted.',
+                data: data
+            })
        }
     })
 }
