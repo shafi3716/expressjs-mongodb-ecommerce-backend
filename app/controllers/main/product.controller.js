@@ -6,7 +6,9 @@ const index = async (req, res) => {
     
     if(req.query.id){
         await Product.findById({ _id: req.query.id })
-        // .populate('categoryId')
+        .select('createdAt description feature image position title')
+        .populate({ path: 'categoryId', select: 'title'})
+        .populate({ path: 'subCategoryId', select: 'title'})
         .sort({createdAt: -1})
         .then( data => {
             if(data){
@@ -15,8 +17,10 @@ const index = async (req, res) => {
         })
     }
     else{
-        await Product.find()
-        // .populate('categoryId')
+        await Product.find({})
+        .select('createdAt description feature image position title')
+        .populate({ path: 'categoryId', select: 'title'})
+        .populate({ path: 'subCategoryId', select: 'title'})
         .sort({createdAt: -1})
         .then( data => {
             if(data){
