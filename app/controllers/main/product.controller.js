@@ -28,7 +28,7 @@ const index = async (req, res) => {
 
 const store = async (req , res) => {
     
-    const { title, description, categoryId , subCategoryId, position } = req.body;
+    const { title, description, categoryId , subCategoryId, position , feature } = req.body;
     
     await new Product({
         title,
@@ -37,6 +37,7 @@ const store = async (req , res) => {
         categoryId,
         subCategoryId,
         position,
+        feature
     })
     .save()
     .then( data => {
