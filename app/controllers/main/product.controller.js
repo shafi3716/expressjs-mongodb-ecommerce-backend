@@ -64,14 +64,15 @@ const destroy = async (req, res) => {
 
     Product.findOneAndDelete({_id: req.params.id}, (err, data) => {
         if(data){
-            const path = RootPath.projectRootPath + '/' + data.image;
+            let path = RootPath.projectRootPath + '/' + data.image;
+
             fs.unlink(path, (err) => {
                 if (err) {
-                  return console.log(err)
+                    return console.log(err)
                 }
                 //file removed
-              })
-
+            })
+            
             res.status(200).json({
                 status: 'success',
                 message: 'Successfully Deleted.',
