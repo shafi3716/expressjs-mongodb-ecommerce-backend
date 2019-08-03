@@ -67,9 +67,9 @@ const destroy = async (req, res) => {
             let path = RootPath.projectRootPath + '/' + data.image;
 
             fs.unlink(path, (err) => {
-                if (err) {
-                    return console.log(err)
-                }
+                // if (err) {
+                //     return console.log(err)
+                // }
                 //file removed
             })
             
