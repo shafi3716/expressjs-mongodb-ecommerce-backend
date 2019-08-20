@@ -74,8 +74,7 @@ const destroy = async (req, res) => {
         if(data){
             res.status(200).json({
                 status: 'success',
-                message: 'Successfully Deleted.',
-                data: data._id
+                message: 'Successfully Deleted.'
             })
         }
     })
