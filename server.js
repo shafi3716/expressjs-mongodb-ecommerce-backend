@@ -6,6 +6,7 @@ var mongodbErrorHandler = require('mongoose-mongodb-errors')
 require('express-async-errors');
 const config = require('./config/keys')
 const passport = require('passport')
+const redis = require('./export/redis')
 
 const app = express();
 const PORT = process.env.PORT || 3000;

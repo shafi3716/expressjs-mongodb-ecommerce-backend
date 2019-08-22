@@ -1,6 +1,12 @@
 const Category = require('../../models/main/Category')
 const SubCategory = require('../../models/main/SubCategory')
-const Product = require('../../models/main/Product')
+// const client = require('../../../export/redis')
+
+const redis = require('redis');
+
+const REDIS_PORT = process.env.PORT || 6379;
+
+const client = redis.createClient(REDIS_PORT);
 
 const index = async (req, res) => {
 
@@ -20,7 +26,8 @@ const index = async (req, res) => {
         .sort({createdAt: -1})
         .then( data => {
             if(data){
-                res.status(200).json(data);
+                sendResponseData(res,data);
+                client.set('category', 3600, data)
             }
         })
     }
@@ -66,9 +73,27 @@ const destroy = async (req,res) => {
     })
 }
 
+const sendResponseData = (res,data) => {
+    res.status(200).json(data)
+}
+
+const cacheData = async (req,res,next) => {
+
+    await client.get('category', (err , data) => {
+        if(data){
+            sendResponseData(res,data);
+            console.log('get')
+        }
+        else{
+            console.log('not')
+            next();
+        }
+    })  
+}
 
 module.exports = {
     index,
     store,
-    destroy
+    destroy,
+    cacheData
 }
