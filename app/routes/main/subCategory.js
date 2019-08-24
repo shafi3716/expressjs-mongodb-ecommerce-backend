@@ -5,7 +5,7 @@ const SubCategoryController = require('../../controllers/main/subCategory.contro
 
 
 // ------------------------------ subCategory ------------------------------------------------------
-router.get('/', passport.authenticate("jwt", { session: false }), SubCategoryController.index);
+router.get('/', passport.authenticate("jwt", { session: false }), SubCategoryController.cacheData, SubCategoryController.index);
 
 router.post('/', passport.authenticate("jwt", { session: false }), SubCategoryController.store);
 

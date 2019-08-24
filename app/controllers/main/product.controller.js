@@ -1,6 +1,7 @@
 const Product = require('../../models/main/Product')
 const RootPath = require('../../../root-path')
 const fs = require('fs')
+const {client} = require('../../../service/redis')
 
 const index = async (req, res) => {
     
@@ -24,7 +25,8 @@ const index = async (req, res) => {
         .sort({createdAt: -1})
         .then( data => {
             if(data){
-                res.status(200).json(data);
+                sendResponseData(res,data);
+                client.setex('product',3600, JSON.stringify(data))
             }
         })
     }
@@ -50,6 +52,8 @@ const store = async (req , res) => {
             message: 'Successfully Saved.',
             data: data
         })
+        client.del('product')
+        cacheHelperIndex()
     })
     .catch(error => {
         res.json({
@@ -77,12 +81,51 @@ const destroy = async (req, res) => {
                 status: 'success',
                 message: 'Successfully Deleted.'
             })
+
+            client.del('product')
+            cacheHelperIndex()  
         }
     })
+}
+
+const cacheHelperIndex = async () => {
+    console.log('database')
+
+    await Product.find({})
+    .select('createdAt description feature image position title')
+    .populate({ path: 'categoryId', select: 'title'})
+    .populate({ path: 'subCategoryId', select: 'title'})
+    .sort({createdAt: -1})
+    .then( data => {
+        if(data){
+            client.setex('product',3600, JSON.stringify(data))
+        }
+    })
+} 
+
+// send response data
+const sendResponseData = (res,data) => {
+    res.status(200).json(data)
+}
+
+// get cache data 
+const cacheData = async (req,res,next) => {
+
+    await client.get('product', (err , data) => {
+        if(data){
+            console.log('redis')
+            sendResponseData(res,JSON.parse(data));
+        }
+        else{
+            console.log('database')
+            next();
+        }
+    })  
 }
 
 module.exports = {
     index,
     store,
-    destroy
+    destroy,
+    cacheData
 }

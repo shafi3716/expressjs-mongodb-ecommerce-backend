@@ -1,7 +1,7 @@
 // Auth Model
 const Auth = require('../../models/auth/Auth')
 const bcrypt = require('bcrypt')
-const config = require('../../../config/keys')
+const config = require('../../../service/keys')
 const validateRegister = require('../../validation/auth/register')
 const validationLogin = require('../../validation/auth/login')
 const jwt = require('jsonwebtoken')

@@ -4,9 +4,8 @@ const cors = require('cors')
 const mongoose = require('mongoose');
 var mongodbErrorHandler = require('mongoose-mongodb-errors')
 require('express-async-errors');
-const config = require('./config/keys')
+const config = require('./service/keys')
 const passport = require('passport')
-const redis = require('./export/redis')
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,7 +20,7 @@ app.use(cors())
 // passport middleware
 app.use(passport.initialize());
 // passport config
-require("./config/passport")(passport);
+require("./service/passport")(passport);
 
 // mongoose connection
 mongoose.connect(config.mongoURL, {useNewUrlParser: true});

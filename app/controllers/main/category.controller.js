@@ -1,12 +1,6 @@
 const Category = require('../../models/main/Category')
 const SubCategory = require('../../models/main/SubCategory')
-// const client = require('../../../export/redis')
-
-const redis = require('redis');
-
-const REDIS_PORT = process.env.PORT || 6379;
-
-const client = redis.createClient(REDIS_PORT);
+const {client} = require('../../../service/redis')
 
 const index = async (req, res) => {
 
@@ -16,7 +10,7 @@ const index = async (req, res) => {
         .sort({createdAt: -1})
         .then( data => {
             if(data){
-                res.status(200).json(data);
+                res.status(200).json(data)
             }
         })
     }
@@ -24,10 +18,11 @@ const index = async (req, res) => {
         await Category.find()
         .select('title description position createdAt')
         .sort({createdAt: -1})
+        .limit(10)
         .then( data => {
             if(data){
                 sendResponseData(res,data);
-                client.set('category', 3600, data)
+                client.setex('category',3600, JSON.stringify(data))
             }
         })
     }
@@ -50,6 +45,8 @@ const store = async (req, res) => {
             message: 'Successfully Saved.',
             data: data,
         })
+        client.del('category')
+        helperDataQuery()
     })
     .catch(error => {
         res.json({
@@ -61,31 +58,66 @@ const store = async (req, res) => {
 
 const destroy = async (req,res) => {
 
-    await SubCategory.deleteMany({categoryId: req.params.id})
-
     await Category.findOneAndDelete({_id: req.params.id}, (err, data) => {
-       if(data){
+        if(data){
             res.status(200).json({
                 status: 'success',
                 message: 'Successfully Deleted.'
             })
-       }
+            client.del('category')
+            helperDataQuery()
+        }
     })
+    await SubCategory.deleteMany({categoryId: req.params.id})
 }
 
+const helperDataQuery = async (skip,limit,res) => {
+    console.log('database')
+
+    if (skip && limit){
+        await Category.find()
+        .select('title description position createdAt')
+        .sort({createdAt: -1})
+        .skip(skip)
+        .limit(limit)
+        .then( data => {
+            if(data){
+                sendResponseData(res,data);
+                client.setex('category',3600, JSON.stringify(data))
+            }
+        })
+    }
+    else{
+        await Category.find()
+        .select('title description position createdAt')
+        .sort({createdAt: -1})
+        .then( data => {
+            if(data){
+                client.setex('category',3600, JSON.stringify(data))
+            }
+        })
+    }
+} 
+
+// send response data
 const sendResponseData = (res,data) => {
     res.status(200).json(data)
 }
 
+// get cache data 
 const cacheData = async (req,res,next) => {
+
+    if (req.query.skip && req.query.limit){
+        helperDataQuery(parseInt(req.query.skip),parseInt(req.query.limit),res)
+    }
 
     await client.get('category', (err , data) => {
         if(data){
-            sendResponseData(res,data);
-            console.log('get')
+            console.log('redis')
+            sendResponseData(res,JSON.parse(data));
         }
         else{
-            console.log('not')
+            console.log('database')
             next();
         }
     })  

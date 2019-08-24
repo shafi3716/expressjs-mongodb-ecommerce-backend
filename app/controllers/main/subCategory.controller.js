@@ -1,5 +1,5 @@
 const SubCategory = require('../../models/main/SubCategory')
-
+const {client} = require('../../../service/redis')
 
 const index = async (req, res) => {
 
@@ -27,7 +27,8 @@ const index = async (req, res) => {
         .sort({createdAt: -1})
         .then( data => {
             if(data){
-                res.status(200).json(data);
+                sendResponseData(res,data);
+                client.setex('subcategory',3600, JSON.stringify(data))
             }
         })
         .catch(error => {
@@ -58,6 +59,8 @@ const store = async (req, res) => {
                 message: 'Successfully Saved.',
                 data: data,
             })
+            client.del('subcategory')
+            cacheHelperIndex()
          }    
     })
     .catch(error => {
@@ -76,12 +79,56 @@ const destroy = async (req, res) => {
                 status: 'success',
                 message: 'Successfully Deleted.'
             })
+            client.del('subcategory')
+            cacheHelperIndex()
         }
     })
+}
+
+const cacheHelperIndex = async () => {
+    console.log('database')
+
+    await SubCategory.find({})
+        .select('title description position createdAt')
+        .populate('categoryId', 'title')
+        .sort({createdAt: -1})
+        .then( data => {
+            if(data){
+                client.setex('subcategory',3600, JSON.stringify(data))
+            }
+        })
+        .catch(error => {
+            res.json({
+                message: 'ERROR Occured.',
+                error
+                })
+            })
+
+} 
+
+// send response data
+const sendResponseData = (res,data) => {
+    res.status(200).json(data)
+}
+
+// get cache data 
+const cacheData = async (req,res,next) => {
+
+    await client.get('subcategory', (err , data) => {
+        if(data){
+            console.log('redis')
+            sendResponseData(res,JSON.parse(data));
+        }
+        else{
+            console.log('database')
+            next();
+        }
+    })  
 }
 
 module.exports = {
     index,
     store,
-    destroy
+    destroy,
+    cacheData
 }
