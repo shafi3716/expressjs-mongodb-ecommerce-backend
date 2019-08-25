@@ -18,7 +18,6 @@ const index = async (req, res) => {
         await Category.find()
         .select('title description position createdAt')
         .sort({createdAt: -1})
-        .limit(10)
         .then( data => {
             if(data){
                 sendResponseData(res,data);
@@ -82,8 +81,8 @@ const helperDataQuery = async (skip,limit,res) => {
         .limit(limit)
         .then( data => {
             if(data){
-                sendResponseData(res,data);
                 client.setex('category',3600, JSON.stringify(data))
+                sendResponseData(res,data);
             }
         })
     }
@@ -107,9 +106,9 @@ const sendResponseData = (res,data) => {
 // get cache data 
 const cacheData = async (req,res,next) => {
 
-    if (req.query.skip && req.query.limit){
-        helperDataQuery(parseInt(req.query.skip),parseInt(req.query.limit),res)
-    }
+    // if (req.query.skip && req.query.limit){
+    //     helperDataQuery(parseInt(req.query.skip),parseInt(req.query.limit),res)
+    // }
 
     await client.get('category', (err , data) => {
         if(data){
