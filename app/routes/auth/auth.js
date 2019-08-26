@@ -6,12 +6,12 @@ const passport = require('passport')
 const AuthController = require('../../controllers/auth/auth.controller')
 
 // register post
-router.post('/auth/register', AuthController.register);
+router.post('/register', AuthController.register);
 
 // login 
-router.post('/auth/login', AuthController.login);
+router.post('/login', AuthController.login);
 
 // current User 
-router.post('/auth/user', passport.authenticate("jwt", { session: false }), AuthController.currentUser);
+router.post('/user', passport.authenticate("jwt", { session: false }), AuthController.currentUser);
 
 module.exports = router;
