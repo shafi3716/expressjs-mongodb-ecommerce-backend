@@ -58,14 +58,12 @@ const store = async (req, res) => {
 const destroy = async (req,res) => {
 
     await Category.findOneAndDelete({_id: req.params.id}, (err, data) => {
-        if(data){
-            res.status(200).json({
-                status: 'success',
-                message: 'Successfully Deleted.'
-            })
-            client.del('category')
-            helperDataQuery()
-        }
+        res.status(200).json({
+            status: 'success',
+            message: 'Successfully Deleted.'
+        })
+        client.del('category')
+        helperDataQuery()
     })
     await SubCategory.deleteMany({categoryId: req.params.id})
 }
