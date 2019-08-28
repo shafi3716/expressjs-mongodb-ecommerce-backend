@@ -24,6 +24,14 @@ const productSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'subCategories'
     },
+    price: {
+        type: String,
+        required: true
+    },
+    quantity: {
+        type: Number,
+        required: true
+    },
     position: {
         type: Number,
     },

@@ -7,7 +7,7 @@ const index = async (req, res) => {
     
     if(req.query.id){
         await Product.findById({ _id: req.query.id })
-        .select('createdAt description feature image position title')
+        .select('createdAt description feature image position title price quantity')
         .populate({ path: 'categoryId', select: 'title'})
         .populate({ path: 'subCategoryId', select: 'title'})
         .sort({createdAt: -1})
@@ -19,7 +19,7 @@ const index = async (req, res) => {
     }
     else{
         await Product.find({})
-        .select('createdAt description feature image position title')
+        .select('createdAt description feature image position title price quantity')
         .populate({ path: 'categoryId', select: 'title'})
         .populate({ path: 'subCategoryId', select: 'title'})
         .sort({createdAt: -1})
@@ -34,7 +34,7 @@ const index = async (req, res) => {
 
 const store = async (req , res) => {
     
-    const { title, description, categoryId , subCategoryId, position , feature } = req.body;
+    const { title, description, categoryId , subCategoryId, price, quantity, position , feature } = req.body;
     
     await new Product({
         title,
@@ -42,6 +42,8 @@ const store = async (req , res) => {
         image: req.file.path,
         categoryId,
         subCategoryId,
+        price,
+        quantity,
         position,
         feature
     })
@@ -92,7 +94,7 @@ const cacheHelperIndex = async () => {
     console.log('database')
 
     await Product.find({})
-    .select('createdAt description feature image position title')
+    .select('createdAt description feature image position title price quantity')
     .populate({ path: 'categoryId', select: 'title'})
     .populate({ path: 'subCategoryId', select: 'title'})
     .sort({createdAt: -1})
