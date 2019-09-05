@@ -4,49 +4,32 @@ const fs = require('fs')
 const {client} = require('../../../service/redis')
 
 const index = async (req, res) => {
-    
-    if(req.query.id){
-        await Product.findById({ _id: req.query.id })
-        .select('createdAt description feature image position title price quantity')
-        .populate({ path: 'categoryId', select: 'title'})
-        .populate({ path: 'subCategoryId', select: 'title'})
-        .sort({createdAt: -1})
-        .then( data => {
-            if(data){
-                res.status(200).json(data);
-            }
-        })
-    }
-    else{
-        await Product.find({})
-        .select('createdAt description feature image position title price quantity')
-        .populate({ path: 'categoryId', select: 'title'})
-        .populate({ path: 'subCategoryId', select: 'title'})
-        .sort({createdAt: -1})
-        .then( data => {
-            if(data){
-                sendResponseData(res,data);
-                client.setex('product',3600, JSON.stringify(data))
-            }
-        })
-    }
+
+    await Product.find()
+    .select('createdAt description feature position title price quantity images')
+    .populate({ path: 'categoryId', select: 'title'})
+    .populate({ path: 'subCategoryId', select: 'title'})
+    .populate({ path: 'images', options: { limit: 1 } })
+    .sort({createdAt: -1})
+    .then( data => {
+        if(data){
+            sendResponseData(res,data)
+            // client.setex('product',3600, JSON.stringify(data))
+        }
+    })
 }
 
 const store = async (req , res) => {
-    
+
     const { title, description, categoryId , subCategoryId, price, quantity, position , feature } = req.body;
     
-    await new Product({
-        title,
-        description,
-        image: req.file.path,
-        categoryId,
-        subCategoryId,
-        price,
-        quantity,
-        position,
-        feature
-    })
+    let product = new Product({ title, description, categoryId, subCategoryId, price,quantity, position, feature })
+
+    for (let i=0; i < req.files.length; i++){
+        product.images.push({path: req.files[i].path, extension: req.files[i].mimetype})
+    }
+
+    await product
     .save()
     .then( data => {
         res.status(201).json({

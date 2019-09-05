@@ -5,6 +5,7 @@ var multer  = require('multer')
 
 var storage = multer.diskStorage({
     destination: function(req, file, cb){
+        // console.log(file);
         cb(null,'./uploads/products')
     },
     filename: function( req, file, cb){
@@ -19,7 +20,7 @@ const ProductController = require('../../controllers/main/product.controller')
 
 // products 
 router.get('/', passport.authenticate("jwt", { session: false }), ProductController.cacheData, ProductController.index);
-router.post('/', upload.single('image'), passport.authenticate("jwt", { session: false }) , ProductController.store);
+router.post('/', upload.array('productImages'), passport.authenticate("jwt", { session: false }) , ProductController.store);
 
 router.delete('/:id', passport.authenticate("jwt", { session: false }) , ProductController.destroy);
 

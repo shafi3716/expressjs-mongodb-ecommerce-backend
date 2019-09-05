@@ -1,6 +1,15 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const productImages = new Schema({
+    path: {
+        type: String
+    },
+    extension: {
+        type: String
+    }
+})
+
 const productSchema = new Schema({
 
     title: {
@@ -10,10 +19,6 @@ const productSchema = new Schema({
     description: {
         type: String,
         trim: true,
-    },
-    image: {
-        type: String,
-        required: true
     },
     categoryId:{
         type: Schema.Types.ObjectId,
@@ -38,7 +43,8 @@ const productSchema = new Schema({
     feature: {
         type: Boolean,
         require: true
-    }
+    },
+    images: [productImages],
 },
     { timestamps: true }
 );
