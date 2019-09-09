@@ -19,7 +19,7 @@ var upload = multer({ storage: storage })
 const ProductController = require('../../controllers/main/product.controller')
 
 // products 
-router.get('/', passport.authenticate("jwt", { session: false }), ProductController.cacheData, ProductController.index);
+router.get('/', passport.authenticate("jwt", { session: false }), ProductController.index);
 router.post('/', upload.array('productImages'), passport.authenticate("jwt", { session: false }) , ProductController.store);
 
 router.delete('/:id', passport.authenticate("jwt", { session: false }) , ProductController.destroy);

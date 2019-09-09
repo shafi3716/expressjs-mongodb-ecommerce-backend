@@ -6,10 +6,9 @@ const {client} = require('../../../service/redis')
 const index = async (req, res) => {
 
     await Product.find()
-    .select('createdAt description feature position title price quantity images')
+    .select('createdAt description feature position title price quantity images.path')
     .populate({ path: 'categoryId', select: 'title'})
     .populate({ path: 'subCategoryId', select: 'title'})
-    .populate({ path: 'images', options: { limit: 1 } })
     .sort({createdAt: -1})
     .then( data => {
         if(data){
@@ -37,8 +36,8 @@ const store = async (req , res) => {
             message: 'Successfully Saved.',
             data: data
         })
-        client.del('product')
-        cacheHelperIndex()
+        // client.del('product')
+        // cacheHelperIndex()
     })
     .catch(error => {
         res.json({
@@ -67,8 +66,8 @@ const destroy = async (req, res) => {
                 message: 'Successfully Deleted.'
             })
 
-            client.del('product')
-            cacheHelperIndex()  
+            // client.del('product')
+            // cacheHelperIndex()  
         }
     })
 }
